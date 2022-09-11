@@ -68,7 +68,7 @@ def tweet_status(value: str) -> str:
         return tweet_id
     except Exception as e:
         logging.error({'level': 'ERROR', 'message': 'Error tweeting.', 'exception': str(e), 'name': 'check_stock_function'})
-        raise e
+        return None
 
 
 
