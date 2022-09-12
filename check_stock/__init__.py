@@ -4,7 +4,7 @@ import logging
 
 import pymongo
 import requests
-import tweepy
+from requests_oauthlib import OAuth1
 from lxml import html
 from lxml.html import HtmlElement
 import azure.functions as func
@@ -34,8 +34,8 @@ def main(mytimer: func.TimerRequest) -> None:
                 if doc.get("status").upper() != value.upper():
                     new_fields["status"] = value
                     new_fields["last_tweet_id"] = tweet_status(value)
-                collection.update_one({"_id": DOCUMENT_ID}, new_fields)
-                logging.info({'level': 'INFO', 'message': 'Status updated.', 'name': 'check_stock_function'})
+                collection.update_one({"_id": DOCUMENT_ID}, {'$set' : new_fields})
+                logging.info({'level': 'INFO', 'message': f'Status UPDATED with status [{value}].', 'name': 'check_stock_function'})
             else:
                 last_tweet_id = tweet_status(value)
                 collection.insert_one({
@@ -44,6 +44,7 @@ def main(mytimer: func.TimerRequest) -> None:
                     "last_update": utc_timestamp,
                     "last_tweet_id": last_tweet_id
                 })
+                logging.info({'level': 'INFO', 'message': f'Status CREATED with status [{value}].', 'name': 'check_stock_function'})
         else:
             logging.error({'level': 'ERROR', 'message': 'Cannot read value.', 'name': 'check_stock_function'})
 
@@ -53,22 +54,20 @@ def main(mytimer: func.TimerRequest) -> None:
 
 def tweet_status(value: str) -> str:
     try:
-        auth = tweepy.OAuthHandler(os.environ['api_key'], os.environ['api_secret'])
-        auth.set_access_token(os.environ['access_key'], os.environ['access_secret'])
-        twitter_conn = tweepy.API(auth, wait_on_rate_limit=True)
-
         if value.upper() == "SIN STOCK":
             tweet_text = "🔴 Stock agotado 🔴"
         else:
             tweet_text = "🟢 Hay Stock 🟢"
         tweet_text += "\nSeguime y activá notificaciones para estar informado/a."
 
-        tweet_id = twitter_conn.update_status(status=tweet_text).id_str
+        twitter_response = requests.post(
+            'https://api.twitter.com/2/tweets',
+            json={"text": tweet_text},
+            auth=OAuth1(os.environ['api_key'], os.environ['api_secret'], os.environ['access_key'], os.environ['access_secret'])
+        )
+
         logging.info({'level': 'INFO', 'message': 'Status tweeted.', 'name': 'check_stock_function'})
-        return tweet_id
+        return twitter_response.json()['data']['id']
     except Exception as e:
         logging.error({'level': 'ERROR', 'message': 'Error tweeting.', 'exception': str(e), 'name': 'check_stock_function'})
         return None
-
-
-
