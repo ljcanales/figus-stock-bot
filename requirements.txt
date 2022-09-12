@@ -6,4 +6,3 @@ azure-functions
 requests
 lxml
 pymongo
-tweepy
