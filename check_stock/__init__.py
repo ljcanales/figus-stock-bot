@@ -55,10 +55,10 @@ def main(mytimer: func.TimerRequest) -> None:
 def tweet_status(value: str) -> str:
     try:
         if value.upper() == "SIN STOCK":
-            tweet_text = "🔴 Stock agotado 🔴"
+            tweet_text = "🔴 STOCK AGOTADO 🔴"
         else:
-            tweet_text = "🟢 Hay Stock 🟢"
-        tweet_text += "\nSeguime y activá notificaciones para estar informado/a."
+            tweet_text = f"🟢 HAY STOCK 🟢\nConseguí en {URL}"
+        tweet_text += "\n\nSeguime y activá notificaciones para estar informado/a."
 
         twitter_response = requests.post(
             'https://api.twitter.com/2/tweets',
