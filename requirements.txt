@@ -6,3 +6,4 @@ azure-functions
 requests
 lxml
 pymongo
+requests_oauthlib
