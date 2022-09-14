@@ -38,8 +38,9 @@ def main(mytimer: func.TimerRequest) -> None:
                 elif doc.get("status").upper() != "SIN STOCK":
                     last_update = datetime.datetime.fromisoformat(doc.get("last_update"))
                     last_status_change = datetime.datetime.fromisoformat(doc.get("last_status_change"))
-                    if (last_update - last_status_change).days < (datetime.datetime.utcnow() - last_status_change).days:
-                        post_tweet(f"🔴 STOCK AGOTADO 🔴\nEl pack x25 sobres de figuritas del mundial se encuentra SIN STOCK hace {(datetime.datetime.utcnow() - last_status_change).days} día/s.")
+                    actual_date = datetime.datetime.fromisoformat(utc_timestamp)
+                    if (last_update - last_status_change).days < (actual_date - last_status_change).days:
+                        post_tweet(f"🔴 STOCK AGOTADO 🔴\nEl pack x25 sobres de figuritas del mundial se encuentra SIN STOCK hace {(actual_date - last_status_change).days} día/s.")
                 collection.update_one({"_id": DOCUMENT_ID}, {'$set': new_fields})
                 logging.info({'level': 'INFO', 'message': f'Status UPDATED with status [{value}].', 'name': 'check_stock_function'})
             else:
