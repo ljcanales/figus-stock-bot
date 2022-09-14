@@ -35,7 +35,7 @@ def main(mytimer: func.TimerRequest) -> None:
                     new_fields["status"] = value
                     new_fields["last_status_change"] = utc_timestamp
                     new_fields["last_tweet_id"] = tweet_status(value)
-                elif doc.get("status").upper() != "SIN STOCK":
+                elif doc.get("status").upper() == "SIN STOCK":
                     last_update = datetime.datetime.fromisoformat(doc.get("last_update"))
                     last_status_change = datetime.datetime.fromisoformat(doc.get("last_status_change"))
                     actual_date = datetime.datetime.fromisoformat(utc_timestamp)
