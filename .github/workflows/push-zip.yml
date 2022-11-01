@@ -15,7 +15,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
       - name: Create zip
-        run: zip -r ./http_${{ env.RELEASE_VERSION }}.zip ./* ./.python_packages
+        run: zip -r ./${{ env.RELEASE_VERSION }}.zip ./* ./.python_packages
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Uploading to Azure storage...
         with:
